@@ -1,5 +1,7 @@
 package com.example.jpa_project.domain;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,15 +19,32 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "profile")
+@Table(name = "orders")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-public class Profile {
+public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "profile_id")
+    @Column(name = "order_id")
     private Long id;
 
-    private String bio;
+    @Column(name = "order_date")
+    private LocalDateTime orderDate;
+    
+    @Enumerated(EnumType.STRING) // "CANCEL", "ORDER"
+    private OrderStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    // 연관 관계 메서드
+    public void setMember(Member member) {
+        this.member = member;
+        member.getOrders().add(this);
+    }
+
+    
 }
