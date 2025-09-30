@@ -8,37 +8,55 @@ import org.springframework.test.annotation.Rollback;
 
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import static org.assertj.core.api.Assertions.*;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DataJpaTest // @Transactional 포함됨
+@DataJpaTest
 public class MemberTest {
     @Autowired
     private EntityManager em;
 
     @Test
-    @Rollback(value = false)
+    @Rollback(false)
     void testSave() {
         // given
         Team team = new Team();
-        team.setName("A팀");
+        team.setName("경호팀");
         em.persist(team);
 
-        Member member = new Member();
-        member.setName("일길동");
-        member.setRoleType(RoleType.ADMIN);
-        member.setTeam(team);
+        Profile profile = new Profile();
+        profile.setBio("자기소개입니다.");
 
         // when
+        Member member = new Member();
+        member.setName("Irene");
+        member.setRoleType(RoleType.MEMBER);
+        member.setTeam(team);
+        member.setProfile(profile); // Profile 테스트
         em.persist(member);
-        // em.flush(); // 왜 필요 없는지 확인 필요.
-        
+
         // then
         assertThat(member.getId()).isNotNull();
-        assertThat(member.getName()).isEqualTo("일길동");
-        assertThat(member.getTeam().getName()).isEqualTo("A팀");
+        assertThat(member.getTeam().getId()).isNotNull();
+        assertThat(member.getTeam().getName()).isEqualTo("경호팀");
+        assertThat(member.getProfile()).isNotNull();
     }
 
+    @Test
+    @Rollback(false)
+    void testUpdate() {
+        // given
+        Team team = em.find(Team.class, 1L);
+        log.info("team.id : {}", team.getId());
+        log.info("team.name : {}", team.getName());
+
+        // when
+        Member member = em.find(Member.class, 1L);
+        team.setName("홍보팀"); // 더티 체킹. 스냅샷과 다르면 update 쿼리문 실행
+        member.setTeam(team);
+
+        // then
+        assertThat(member.getTeam().getName()).isEqualTo("홍보팀");
+    }
 }

@@ -17,7 +17,7 @@ spring:
   # JPA 설정  
   jpa:
     hibernate:
-      ddl-auto: create   
+      ddl-auto: update   
     # show-sql: true     # 콘솔에 출력
     properties:
       hibernate:       
