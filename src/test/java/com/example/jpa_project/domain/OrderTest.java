@@ -1,7 +1,5 @@
 package com.example.jpa_project.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
@@ -26,21 +24,28 @@ public class OrderTest {
     void testSave() {
         // given
         // 회원정보등록
-        Member member1 = new Member();
-        member1.setName("Frank");
-        em.persist(member1);
+        Member member = new Member();
+        member.setName("Drake");
+        em.persist(member);
+
+        Delivery delivery = new Delivery();
+        delivery.setStatus(DeliveryStatus.READY);
+        em.persist(delivery);
 
         // when
         Order order = new Order();
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(OrderStatus.ORDER);
-        order.setMember(member1);
+        order.setMember(member);
+        order.setDelivery(delivery);
         em.persist(order);
 
         // then
         assertThat(order.getId()).isNotNull();
         assertThat(order.getMember()).isNotNull();
-        assertThat(order.getMember().getName()).isEqualTo("Frank");
-        assertThat(member1.getOrders()).hasSize(1);;
+        assertThat(order.getMember().getName()).isEqualTo("Drake");
+        assertThat(member.getOrders()).hasSize(1);
+        assertThat(order.getDelivery().getId()).isNotNull();
+        assertThat(order.getDelivery().getStatus()).isEqualTo(DeliveryStatus.READY);
     }
 }
