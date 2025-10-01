@@ -15,5 +15,9 @@ import lombok.Setter;
 public class Album extends Item {
 
     private String artist;
-    
+
+    public void change(String name, int price, int stockQuantity, String artist) {
+        super.change(name, price, stockQuantity);
+        this.artist = artist;
+    }
 }
