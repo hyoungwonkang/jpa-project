@@ -46,4 +46,21 @@ public class OrderItem {
         this.item = item;
         item.getOrderItems().add(this);
     }
+
+    // 주문 항목 생성
+    // 팩터리 메서드
+    public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setItem(item);
+        orderItem.setOrderPrice(orderPrice);
+        orderItem.setCount(count);
+        item.removeStock(count); // 주문 항목에 상품의 재고량을 감소한다.
+
+        return orderItem;
+    }
+
+    // 주문 취소
+    public void cancel() {
+        item.addStock(count);
+    }
 }

@@ -63,4 +63,33 @@ public class Order {
         orderItem.setOrder(this);
     }
 
+    // 주문 생성
+    // (스태틱) 팩토리 메서드 : 복잡한 것은 생성자보다 팩토리 메서드가 나음(이펙티브 자바 책 아이템1). 복잡한 로직과 연관관계메서드 같이 사용하기에.
+    public static Order createOrder(Member member, Delivery delivery, List<OrderItem> orderItems) {
+
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+        order.setStatus(OrderStatus.ORDER);
+        order.setOrderDate(LocalDateTime.now());
+
+        // orderItems.forEach(orderItem -> {
+        //     order.addOrderItem(orderItem);
+        // });
+        orderItems.forEach(order::addOrderItem);
+
+        return order;
+    }
+
+    // 주문 취소
+    public void cancelOrder() {
+        if (delivery.getStatus() == DeliveryStatus.COMPLETED) {
+            throw new IllegalStateException("이미 배송완료된 상품은 주문 취소가 불가능합니다"); 
+        }
+
+        orderItems.forEach(OrderItem::cancel);
+
+        this.setStatus(OrderStatus.CANCEL);
+    }
+
 }
